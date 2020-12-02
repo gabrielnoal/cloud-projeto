@@ -1,0 +1,13 @@
+#!/bin/sh
+
+sudo apt update;
+
+git clone https://github.com/gabrielnoal/tasks.git;
+
+cd tasks/;
+
+sudo sed -i 's/XXXX/DB_IP/g' /home/ubuntu/tasks/portfolio/settings.py;
+
+./tasks/install.sh;
+
+sudo reboot;

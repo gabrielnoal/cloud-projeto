@@ -1,0 +1,194 @@
+{
+  "us-east-1": {
+    "KeyName": "gabrielno1",
+    "SecurityGroups": [
+      {
+        "GroupName": "ORM_SecurityGroup",
+        "Description": "Open port 22, 8080 and 5432",
+        "ingress_rules": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 22,
+            "IpProtocol": "TCP",
+            "ToPort": 22
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 5432,
+            "IpProtocol": "TCP",
+            "ToPort": 5432
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 8080,
+            "IpProtocol": "TCP",
+            "ToPort": 8080
+          }
+        ]
+      },
+      {
+        "GroupName": "Load_Balancer_SecurityGroup",
+        "Description": "Open port 22 and 8080",
+        "ingress_rules": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 22,
+            "IpProtocol": "TCP",
+            "ToPort": 22
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 8080,
+            "IpProtocol": "TCP",
+            "ToPort": 8080
+          }
+        ]
+      }
+    ],
+    "instances": [
+      {
+        "ImageId": "ami-0885b1f6bd170450c",
+        "MinCount": 1,
+        "MaxCount": 1,
+        "InstanceType": "t2.micro",
+        "KeyName": "gabrielno1",
+        "SecurityGroups": [
+          "ORM_SecurityGroup"
+        ],
+        "UserDataFile": "ormUserData.txt",
+        "UserDataReplaceVars": [
+          "DB_IP"
+        ],
+        "TagSpecifications": [
+          {
+            "ResourceType": "instance",
+            "Tags": [
+              {
+                "Key": "Name",
+                "Value": "ORM_APP"
+              }
+            ]
+          }
+        ],
+        "createImage": true
+      }
+    ],
+    "loadBalancers": [
+      {
+        "Name": "ORM-LOAD-BALANCER",
+        "SecurityGroupName": "Load_Balancer_SecurityGroup",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ORM-LOAD-BALANCER"
+          }
+        ],
+        "Scheme": "internet-facing",
+        "Type": "application",
+        "IpAddressType": "ipv4",
+        "AvailabilityZones": [
+          "us-east-1a",
+          "us-east-1b",
+          "us-east-1c",
+          "us-east-1d",
+          "us-east-1e",
+          "us-east-1f"
+        ]
+      }
+    ],
+    "targetGroups": [
+      {
+        "Name": "ORM-TARGET-GROUP",
+        "Port": 8080,
+        "Protocol": "HTTP",
+        "HealthCheckProtocol": "HTTP",
+        "HealthCheckPath": "/healthcheck",
+        "TargetType": "instance"
+      }
+    ],
+    "listeners": [
+      {
+        "Protocol": "HTTP",
+        "Port": 8080,
+        "DefaultActions": [
+          {
+            "Type": "forward",
+            "TargetGroupArn": "ORM-TARGET-GROUP"
+          }
+        ],
+        "LoadBalancerArn": "ORM-LOAD-BALANCER"
+      }
+    ],
+    "autoscalings": [
+      {
+        "AutoScalingGroupName": "ORM_AUTO_SCALLING",
+        "MinSize": 1,
+        "MaxSize": 3,
+        "InstanceName": "ORM_APP",
+        "DesiredCapacity": 1,
+        "TargetGroupARNs": [
+          "ORM-TARGET-GROUP"
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ORM_AUTO_SCALLING"
+          }
+        ]
+      }
+    ]
+  },
+  "us-east-2": {
+    "KeyName": "gabrielno1_ohio",
+    "SecurityGroups": [
+      {
+        "GroupName": "DB_SecurityGroup",
+        "Description": "Open port 22, 8080 and 5432",
+        "ingress_rules": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 22,
+            "IpProtocol": "TCP",
+            "ToPort": 22
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 5432,
+            "IpProtocol": "TCP",
+            "ToPort": 5432
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "FromPort": 8080,
+            "IpProtocol": "TCP",
+            "ToPort": 8080
+          }
+        ]
+      }
+    ],
+    "instances": [
+      {
+        "ImageId": "ami-09d160e4b73e3e8ac",
+        "MinCount": 1,
+        "MaxCount": 1,
+        "InstanceType": "t2.micro",
+        "KeyName": "gabrielno1_ohio",
+        "SecurityGroups": [
+          "DB_SecurityGroup"
+        ],
+        "UserDataFile": "dbUserData.txt",
+        "TagSpecifications": [
+          {
+            "ResourceType": "instance",
+            "Tags": [
+              {
+                "Key": "Name",
+                "Value": "DB_INSTANCE"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
