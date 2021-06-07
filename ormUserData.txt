@@ -2,12 +2,13 @@
 
 sudo apt update;
 
+cd /home/ubuntu;
 git clone https://github.com/gabrielnoal/tasks.git;
 
-cd tasks/;
+cd /home/ubuntu/tasks/;
 
 sudo sed -i 's/XXXX/DB_IP/g' /home/ubuntu/tasks/portfolio/settings.py;
 
-./tasks/install.sh;
+/home/ubuntu/tasks/install.sh;
 
 sudo reboot;

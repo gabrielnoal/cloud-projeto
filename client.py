@@ -6,10 +6,11 @@ import json
 for arg in sys.argv:
     print(arg)
 
-with open("loadBalancer_DNS.txt", "r") as file:
-        text = file.readlines()
+# with open("loadBalancer_DNS.txt", "r") as file:
+#         text = file.readlines()
 
-url = "http://" + text[0] + "/tasks/" 
+# url = "http://" + text[0] + "/tasks/" 
+url = "http://" + '52.205.210.220:8080' + "/tasks" 
 
 def get():
     response = requests.get(url + '/get')
