@@ -40,8 +40,7 @@ if __name__ ==  '__main__':
             print("Procurando a rota /add...")
             title = sys.argv[2]
             description = sys.argv[3]
-            pub_date = datetime.now().isoformat()
-            payload = {'title':title, 'pub_date':pub_date, 'description': description}
+            payload = {'title':title, 'description': description}
             add(payload)
         else: 
             print("Argumentos insuficientes. Passe primeiramente o nome do arquivo, depois a função a ser chamada (get ou add). Se a função for get, não são necessários outros argumentos. Se for add, o 2º argumento é o título e o 3º é a descrição")
