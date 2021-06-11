@@ -396,8 +396,9 @@ def findTargetGroupArnByName(elb_client, name):
 
 def delete_autoscaling_by_name(as_client, name):
     try:
+        print(f"Deletando autoscaling group: {name}")
         as_client.delete_auto_scaling_group(
-            AutoScalingGroupName=name, ForceDelete=True)
+            AutoScalingGroupName=name, ForceDelete=False)
         print(f'Autoscaling deletado: {name}')
         as_client.delete_launch_configuration(LaunchConfigurationName=name)
         print(f'launch_configuration deletado: {name}')
@@ -407,10 +408,6 @@ def delete_autoscaling_by_name(as_client, name):
 
 def create_auto_scaling(ec2_client, elb_client, as_client, instances, config):
     try:
-        AutoScalingGroupName = config.get('AutoScalingGroupName')
-        if AutoScalingGroupName:
-            delete_autoscaling_by_name(as_client, AutoScalingGroupName)
-
         MinSize = config.get('MinSize')
         MaxSize = config.get('MaxSize')
         DesiredCapacity = config.get('DesiredCapacity')
@@ -428,6 +425,7 @@ def create_auto_scaling(ec2_client, elb_client, as_client, instances, config):
             if instance['name'] == InstanceName:
                 InstanceId = instance['id']
 
+        AutoScalingGroupName = config.get('AutoScalingGroupName')
         print(f'Criando auto scalling group: {AutoScalingGroupName}')
         as_client.create_auto_scaling_group(
             AutoScalingGroupName=AutoScalingGroupName,
@@ -470,6 +468,15 @@ def runAll(region_name, configJson):
       Name = loadBalancerConfig.get('Name', '')
       delete_load_balancers(elb_client, Name)
 
+    autoscalingsConfigs = config.get('autoscalings', [])
+    for group in autoscalingsConfigs:
+      
+      AutoScalingGroupName = group.get('AutoScalingGroupName')
+      if AutoScalingGroupName:
+        delete_autoscaling_by_name(as_client, AutoScalingGroupName)
+
+    time.sleep(5)
+
 
     replace_security_group(ec2_client, ec2_resource, config)
 
@@ -485,11 +492,10 @@ def runAll(region_name, configJson):
 def main():
     configJson = loadConfigJson()
 
-    # us_east_2_instances = runAll('us-east-2', configJson)
-    # db_ip = us_east_2_instances[0]['ip']
-    # print(db_ip)
-    # global_var_json['DB_IP'] = db_ip
-    global_var_json['DB_IP'] = '18.217.26.228'
+    us_east_2_instances = runAll('us-east-2', configJson)
+    db_ip = us_east_2_instances[0]['ip']
+    print(db_ip)
+    global_var_json['DB_IP'] = db_ip
 
     runAll('us-east-1', configJson)
 
